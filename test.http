@@ -1,4 +1,4 @@
-GET http://localhost:8080/services/DWH_dLookups
-SOAPAction: taxcodesLookup
+GET http://localhost:8080/services/Dataservice
+SOAPAction: LookupTaxcodes
 POST http://localhost:8080/services/DWH_dLookups/insertTaxcode?code=P&value=22
 SOAPAction: insertTaxcode

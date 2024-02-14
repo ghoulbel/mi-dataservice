@@ -1,45 +1,45 @@
-<data name="DWH_dLookups" transports="http https local">
-   <config id="bz-lookups-ds">
+<data name="Dataservice" transports="http https local">
+   <config id="default">
       <property name="driverClassName">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
       <property name="url">jdbc:sqlserver://192.168.1.131:1444;databaseName=mi_dataservice</property>
       <property name="username">readonly</property>
       <property name="password">Flash8.2</property>
    </config>
-   <query id="taxcodesLookup" useConfig="bz-lookups-ds">
-      <sql>SELECT code,value FROM taxcodes</sql>
-      <result element="md_taxcodesCollection" rowName="md_taxcodes">
-         <element column="code" name="code" xsdType="xs:string"/>
-         <element column="value" name="value" xsdType="xs:numeric"/>
+
+   <query id="LookupTaxcodes" useConfig="default">
+      <sql>SELECT code,value FROM taxcodes WHERE code = ?</sql>
+      <result element="lookup" rowName="lookup">
+         <element name="code" column="code" />
+         <element name="value" column="value" />
       </result>
+      <param name="code" paramType="SCALAR" sqlType="STRING" type="IN" ordinal="1">
+      </param>
    </query>
-   <operation name="taxcodesLookup">
-      <call-query href="taxcodesLookup"/>
+   <operation name="TaxcodesByCode">
+      <call-query href="LookupTaxcodes">
+         <with-param name="code" query-param="code" />
+      </call-query>
    </operation>
-
-   <query id="insertTaxcode" useConfig="bz-lookups-ds">
-      <sql>INSERT INTO taxcodes (code, value) VALUES (?,?)</sql>
-      <result element="md_taxcodeResponse" rowName="md_taxcodes">
-         <parameter name="code" sqlType="xs:string"/>
-         <parameter name="value" sqlType="xs:integer"/>
-      </result>
-      <param defaultValue="I" name="code" ordinal="1" sqlType="STRING"/>
-      <param defaultValue="1" name="value" ordinal="2" sqlType="INTEGER"/>
-
-  </query>
-  
-  <operation name="insertTaxcode">
-      <call-query href="insertTaxcode">
-          <with-param name="code" query-param="code"/>
-          <with-param name="value" query-param="value"/>
+   <resource path="taxcodes/lookup" method="POST">
+      <call-query href="LookupTaxcodes">
+         <with-param name="code" query-param="code" />
       </call-query>
-  </operation>
-  
-  <resource method="POST" path="/insertTaxcode">
-      <description/>
-      <call-query href="insertTaxcode">
-          <with-param name="code" query-param="code"/>
-          <with-param name="value" query-param="value"/>
-      </call-query>
-  </resource>
-  
+   </resource>
+
+   <query id="updateTaxcodes" useConfig="default">
+      <sql>UPDATE taxcodes SET value = ?, description = ?, changetimestamp = GETUTCDATE() WHERE code
+         = ?</sql>
+      <param name="value" paramType="SCALAR" sqlType="Float" type="IN" ordinal="1" />
+      <param name="description" paramType="SCALAR" sqlType="STRING" type="IN" ordinal="2" />
+      <param name="code" paramType="SCALAR" sqlType="STRING" type="IN" ordinal="3" />
+   </query>
+
+   <query id="createProductQuery" useConfig="default">
+      <sql>INSERT INTO taxcodes (code, value, description, createtimestamp) VALUES (?, ?, ?,
+         GETUTCDATE())</sql>
+      <param name="code" paramType="SCALAR" sqlType="STRING" type="IN" ordinal="1" />
+      <param name="value" paramType="SCALAR" sqlType="STRING" type="IN" ordinal="2" />
+      <param name="description" paramType="SCALAR" sqlType="STRING" type="IN" ordinal="3" />
+   </query>
+   
 </data>
