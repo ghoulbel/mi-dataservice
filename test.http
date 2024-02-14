@@ -1,4 +1,9 @@
 GET http://localhost:8080/services/Dataservice
 SOAPAction: LookupTaxcodes
-POST http://localhost:8080/services/DWH_dLookups/insertTaxcode?code=P&value=22
-SOAPAction: insertTaxcode
+GET http://localhost:8080/services/Dataservice/taxcodes/lookup/B
+
+GET http://localhost:8080/services/Dataservice/taxcodes/updateTaxcodes/U/5.66/blubb dich
+
+GET http://localhost:8080/services/Dataservice/taxcodes/createTaxcodes/y/8.48/dest
+
+

@@ -18,10 +18,11 @@
             <property name="ClientApiNonBlocking" value="true" scope="axis2" action="remove"/>
             
             <datamapper config="gov:datamapper/schema/mappingconfig.dmc" inputSchema="gov:datamapper/schema/mappingconfig_inputSchema.json" inputType="CSV" outputSchema="gov:datamapper/schema/mappingconfig_outputSchema.json" outputType="XML"/>
-			<property name="SOAPAction" value="insertTaxcode" scope="transport" />
+            <property name="code" expression="$body//items/code/text()" />
+            <property name="SOAPAction" value="createTaxcodes" scope="transport" />
             <send>
 				<endpoint>
-					<http method="get" uri-template="http://localhost:8080/services/DWH_dLookups" />
+					<http method="get" uri-template="http://localhost:8080/services/Dataservice/taxcodes/createTaxcodes/{code}/7.77/vfs" />
 				</endpoint>
             </send>
         </inSequence>
