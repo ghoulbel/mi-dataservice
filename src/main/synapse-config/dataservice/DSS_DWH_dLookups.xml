@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DESCRIPTION:  General Master Data that is exported once per day from dwh to local server to increase performance
+	Note: if you have deployed a dataservice with the same name manually before it will not appear as part of the carbon app list,
+	therefore the deployment will fail with the message that a dataservice with the same name exits. Delete the dataservice first. 
+	afterwards an update an redployment will work. 
+
+-->
+<data name="DWH_dLookups" transports="http https local">
+   <config id="bz-lookups-ds">
+      <property name="driverClassName">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+      <property name="url">jdbc:sqlserver://192.168.1.131:1444;databaseName=mi_dataservice</property>
+      <property name="username">readonly</property>
+      <property name="password">Flash8.2</property>
+   </config>
+   <query id="taxcodesLookup" useConfig="bz-lookups-ds">
+      <sql>SELECT code,value FROM taxcodes</sql>
+      <result element="md_taxcodesCollection" rowName="md_taxcodes">
+         <element column="code" name="code" xsdType="xs:string"/>
+         <element column="value" name="value" xsdType="xs:numeric"/>
+      </result>
+   </query>
+   <operation name="taxcodesLookup">
+      <call-query href="taxcodesLookup"/>
+   </operation>
+
+   <query id="insertTaxcode" useConfig="bz-lookups-ds">
+      <sql>INSERT INTO taxcodes (code, value) VALUES (N'?', CAST(? AS Numeric(5, 2)))</sql>
+      <result element="md_taxcodeResponse" rowName="md_taxcodes">
+         <parameter name="code" sqlType="xs:string"/>
+         <parameter name="value" sqlType="xs:numeric"/>
+      </result>
+      <param defaultValue="I" name="code" ordinal="1" sqlType="STRING"/>
+      <param defaultValue="1" name="value" ordinal="2" sqlType="NUMERIC"/>
+
+  </query>
+  
+  <operation name="insertTaxcode">
+      <call-query href="insertTaxcode">
+          <with-param name="code" query-param="code"/>
+          <with-param name="value" query-param="value"/>
+      </call-query>
+  </operation>
+  
+  <resource method="POST" path="/insertTaxcode">
+      <description/>
+      <call-query href="insertTaxcode">
+          <with-param name="code" query-param="code"/>
+          <with-param name="value" query-param="value"/>
+      </call-query>
+  </resource>
+  
+</data>
