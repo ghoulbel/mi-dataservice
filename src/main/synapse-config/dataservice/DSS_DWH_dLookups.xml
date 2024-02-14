@@ -1,10 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- DESCRIPTION:  General Master Data that is exported once per day from dwh to local server to increase performance
-	Note: if you have deployed a dataservice with the same name manually before it will not appear as part of the carbon app list,
-	therefore the deployment will fail with the message that a dataservice with the same name exits. Delete the dataservice first. 
-	afterwards an update an redployment will work. 
-
--->
 <data name="DWH_dLookups" transports="http https local">
    <config id="bz-lookups-ds">
       <property name="driverClassName">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
