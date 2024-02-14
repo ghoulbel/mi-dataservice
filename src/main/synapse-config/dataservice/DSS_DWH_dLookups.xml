@@ -24,13 +24,13 @@
    </operation>
 
    <query id="insertTaxcode" useConfig="bz-lookups-ds">
-      <sql>INSERT INTO taxcodes (code, value) VALUES (N'?', CAST(? AS Numeric(5, 2)))</sql>
+      <sql>INSERT INTO taxcodes (code, value) VALUES (?,?)</sql>
       <result element="md_taxcodeResponse" rowName="md_taxcodes">
          <parameter name="code" sqlType="xs:string"/>
-         <parameter name="value" sqlType="xs:numeric"/>
+         <parameter name="value" sqlType="xs:integer"/>
       </result>
       <param defaultValue="I" name="code" ordinal="1" sqlType="STRING"/>
-      <param defaultValue="1" name="value" ordinal="2" sqlType="NUMERIC"/>
+      <param defaultValue="1" name="value" ordinal="2" sqlType="INTEGER"/>
 
   </query>
   
