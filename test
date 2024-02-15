@@ -1,0 +1,26 @@
+<api xmlns="http://ws.apache.org/ns/synapse" name="TEMP_API" context="/TEMP_API/otp">
+<resource methods="POST" uri-template="/validate?system={systemVal}&amp;user={userVal}&amp;otp={otpVal}">
+<inSequence>
+<property name="SYSTEM" expression="$url:system" scope="default" type="STRING"/>
+<property name="USER" expression="$url:user" scope="default" type="STRING"/>
+<property name="OTP" expression="$url:otp" scope="default" type="STRING"/>
+
+<log level="custom">
+<property name="value-system" expression="get-property('SYSTEM')"/>
+<property name="value-user" expression="get-property('USER')"/>
+<property name="value-otp" expression="get-property('OTP')"/>
+</log>
+
+<property name="uri.var.urls" value="/user-administration-ws/authenticate?param=test" scope="default" type="STRING"/>
+<property name="uri.var.user" expression="$trp:username" scope="default" type="STRING"/>
+<property name="uri.var.password" expression="$trp:password" scope="default" type="STRING"/>
+
+<call>
+<endpoint>
+<http method="POST" uri-template="http://localhost:8280/editing/edit?a={uri.var.user}&amp;b={uri.var.password}"/>
+</endpoint>
+</call>
+
+</inSequence>
+</resource>
+</api>

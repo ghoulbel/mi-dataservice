@@ -23,32 +23,18 @@
             <property name="uri.var.value" expression="$body//items/Wert" scope="default" type="STRING"/>
             <property name="uri.var.description" expression="$body//items/Beschreibung" scope="default" type="STRING"/>
 
-<!-- LOOKUP DB -->
+            <!-- Propagate uri.var.code to OUT_ONLY scope -->
+            <property name="uri.var.code" expression="get-property('uri.var.code')" scope="default" action="remove"/>
+            <property name="uri.var.code" expression="$ctx:uri.var.code" scope="default" action="set"/>
 
-            <!-- Make the call -->
-            <call>
-                <endpoint>
-                    <http method="GET" uri-template="http://localhost:8080/services/Dataservice/taxcodes/lookup/{uri.var.code}" />
-                </endpoint>
-            </call>
-
-            <!-- Log the response after the call -->
-            <log level="full">
-                <property name="ResponsePayload" expression="$body"/>
-            </log>
-<!--
-            <send>
-				<endpoint>
-					<http method="GET" uri-template="http://localhost:8080/services/Dataservice/taxcodes/updateTaxcodes/{uri.var.code}/{uri.var.value}/{uri.var.description}" />
-				</endpoint>
-            </send>
-
-            <send>
-				<endpoint>
-					<http method="GET" uri-template="http://localhost:8080/services/Dataservice/taxcodes/createTaxcodes/{uri.var.code}/{uri.var.value}/{uri.var.description}" />
-				</endpoint>
-            </send>
--->
         </inSequence>
+        <outSequence>
+            <!-- After completing processing, call the dataservice-proxy -->
+            <send>
+                <endpoint>
+                    <address uri="http://localhost:8080/services/dataservice-proxy"/>
+                </endpoint>
+            </send>
+        </outSequence>
     </target>
 </proxy>
