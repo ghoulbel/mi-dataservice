@@ -50,7 +50,7 @@
       <param name="value" paramType="SCALAR" sqlType="STRING" type="IN" ordinal="2" />
       <param name="description" paramType="SCALAR" sqlType="STRING" type="IN" ordinal="3" />
    </query>
-      <resource path="taxcodes/createTaxcodes/{code}/{value}/{description}" method="GET">
+   <resource path="taxcodes/createTaxcodes/{code}/{value}/{description}" method="GET">
       <call-query href="createTaxcodes">
          <with-param name="code" query-param="code" />
          <with-param name="value" query-param="value" />

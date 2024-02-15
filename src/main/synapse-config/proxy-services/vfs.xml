@@ -14,16 +14,26 @@
             <property name="filename" expression="fn:concat(fn:substring-before($ctx:filename, '.csv'), '.xml')" />
             <property name="transport.vfs.ReplyFileName" expression="$ctx:filename" scope="transport"/>
 
+            <!-- For what is that?
             <property action="set" name="OUT_ONLY" value="true"/>
             <property name="ClientApiNonBlocking" value="true" scope="axis2" action="remove"/>
-            
+            -->
+
             <datamapper config="gov:datamapper/schema/mappingconfig.dmc" inputSchema="gov:datamapper/schema/mappingconfig_inputSchema.json" inputType="CSV" outputSchema="gov:datamapper/schema/mappingconfig_outputSchema.json" outputType="XML"/>
+            
+            <!-- Dev purpose 
+            <send>
+                <endpoint>
+                    <address uri="vfs:file:///data/OUT"/> 
+                </endpoint>
+            </send>
+            -->
 
             <property name="uri.var.code" expression="$body//items/Code" scope="default" type="STRING"/>
             <property name="uri.var.value" expression="$body//items/Wert" scope="default" type="STRING"/>
             <property name="uri.var.description" expression="$body//items/Beschreibung" scope="default" type="STRING"/>
 
-<!-- LOOKUP DB -->
+            <!-- LOOKUP DB -->
 
             <!-- Make the call -->
             <call>
@@ -32,23 +42,44 @@
                 </endpoint>
             </call>
 
-            <!-- Log the response after the call -->
-            <log level="full">
-                <property name="ResponsePayload" expression="$body"/>
-            </log>
-<!--
-            <send>
-				<endpoint>
-					<http method="GET" uri-template="http://localhost:8080/services/Dataservice/taxcodes/updateTaxcodes/{uri.var.code}/{uri.var.value}/{uri.var.description}" />
-				</endpoint>
-            </send>
+            <property name="ResponseCode" expression="$body//ns:lookup/ns:code/text()" xmlns:ns="http://ws.wso2.org/dataservice"/>
+            <property name="ResponseValue" expression="$body//ns:lookup/ns:value/text()" xmlns:ns="http://ws.wso2.org/dataservice"/>
+            <property name="ResponseDescription" expression="$body//ns:lookup/ns:description/text()" xmlns:ns="http://ws.wso2.org/dataservice"/>
+            <property name="InputCode" expression="get-property('uri.var.code')" />
+            <property name="InputValue" expression="get-property('uri.var.value')" />
+            <property name="InputDescription" expression="get-property('uri.var.description')" />
 
-            <send>
-				<endpoint>
-					<http method="GET" uri-template="http://localhost:8080/services/Dataservice/taxcodes/createTaxcodes/{uri.var.code}/{uri.var.value}/{uri.var.description}" />
-				</endpoint>
-            </send>
--->
+            <log level="custom">
+                <property name="ResponseCode" expression="get-property('ResponseCode')" />
+            </log>
+            <filter xpath="get-property('ResponseCode')=''">
+                <then>
+                    <log level="custom">
+                        <property name="Message" value="ResponseCode is empty, calling createTaxcodes service" />
+                    </log>
+                    <!-- Send mediator when ResponseCode is empty -->
+                    <send>
+                        <endpoint>
+                            <http method="GET" uri-template="http://localhost:8080/services/Dataservice/taxcodes/createTaxcodes/{uri.var.code}/{uri.var.value}/{uri.var.description}" />
+                        </endpoint>
+                    </send>
+                </then>
+                <else>
+                    <filter xpath="get-property('uri.var.code') != get-property('ResponseCode')">
+                        <then>
+                            <!-- Send mediator when InputValue is not equal to ResponseValue -->
+                            <send>
+                                <endpoint>
+                                    <http method="GET" uri-template="http://localhost:8080/services/Dataservice/taxcodes/updateTaxcodes/{uri.var.code}/{uri.var.value}/{uri.var.description}" />
+                                </endpoint>
+                            </send>
+                        </then>
+                        <else>
+                            <!-- Do nothing when ResponsePayload is not empty and InputValue is equal to ResponseValue -->
+                        </else>
+                    </filter>
+                </else>
+            </filter>
         </inSequence>
     </target>
 </proxy>

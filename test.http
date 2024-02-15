@@ -1,10 +1,10 @@
 GET http://localhost:8080/services/Dataservice
 SOAPAction: LookupTaxcodes
-GET http://localhost:8080/services/Dataservice/taxcodes/lookup/R
+GET http://localhost:8080/services/Dataservice/taxcodes/lookup/c
 
-GET http://localhost:8080/services/Dataservice/taxcodes/updateTaxcodes/U/5.66/blubb dich
+GET http://localhost:8080/services/Dataservice/taxcodes/updateTaxcodes/U/5.66/blubb
 
-GET http://localhost:8080/services/Dataservice/taxcodes/createTaxcodes/y/8.48/dest
+GET http://localhost:8080/services/Dataservice/taxcodes/createTaxcodes/y/8.48/des
 
 
 
